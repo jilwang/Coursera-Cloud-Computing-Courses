@@ -33,8 +33,10 @@ int main(int argc, char *argv[]) {
 
 	// Create a new application object
 	Application *app = new Application(argv[1]);
+
 	// Call the run function
 	app->run();
+
 	// When done delete the application object
 	delete(app);
 
@@ -51,7 +53,7 @@ Application::Application(char *infile) {
 	par->setparams(infile);
 	log = new Log(par);
 	en = new EmulNet(par);
-	mp1 = (MP1Node **) malloc(par->EN_GPSZ * sizeof(MP1Node *));
+	mp1 = (MP1Node **) malloc(par->EN_GPSZ * sizeof(MP1Node *)); // allocate an array of MP1Nodes
 
 	/*
 	 * Init all nodes
@@ -59,12 +61,26 @@ Application::Application(char *infile) {
 	for( i = 0; i < par->EN_GPSZ; i++ ) {
 		Member *memberNode = new Member;
 		memberNode->inited = false;
+
+        // Create and initialize a new address for the node
 		Address *addressOfMemberNode = new Address();
+
+        // For some reason the skeleton code did not use this joinaddr
+        // Reference: getjoinaddr() in Application.cpp
 		Address joinaddr;
 		joinaddr = getjoinaddr();
+
+        // For some reason the skeleton code did not use this par->PORTNUM at all
+        // Reference: Emulnet::ENinit() in EmulNet.cpp
 		addressOfMemberNode = (Address *) en->ENinit(addressOfMemberNode, par->PORTNUM);
+
+        // Create the MP1Node object for this node
+        // And link it to the i-th entry of mp1
 		mp1[i] = new MP1Node(memberNode, par, en, log, addressOfMemberNode);
 		log->LOG(&(mp1[i]->getMemberNode()->addr), "APP");
+
+        // For some reason, the MP1Node constructor stores a deep copy of the address in the newly created node
+        // Thus the addressOfmemberNode heap object could be deleted
 		delete addressOfMemberNode;
 	}
 }
@@ -91,14 +107,17 @@ int Application::run()
 {
 	int i;
 	int timeWhenAllNodesHaveJoined = 0;
+
 	// boolean indicating if all nodes have joined
 	bool allNodesJoined = false;
 	srand(time(NULL));
 
 	// As time runs along
 	for( par->globaltime = 0; par->globaltime < TOTAL_RUNNING_TIME; ++par->globaltime ) {
+
 		// Run the membership protocol
 		mp1Run();
+
 		// Fail some nodes
 		fail();
 	}
@@ -143,8 +162,8 @@ void Application::mp1Run() {
 		if( par->getcurrtime() == (int)(par->STEP_RATE*i) ) {
 			// introduce the ith node into the system at time STEPRATE*i
 			mp1[i]->nodeStart(JOINADDR, par->PORTNUM);
-			cout<<i<<"-th introduced node is assigned with the address: "<<mp1[i]->getMemberNode()->addr.getAddress() << endl;
-			nodeCount += i;
+			cout << i << "-th introduced node is assigned with the address: " << mp1[i]->getMemberNode()->addr.getAddress() << endl;
+			nodeCount += i; // global counter
 		}
 
 		/*
@@ -205,6 +224,8 @@ void Application::fail() {
  * FUNCTION NAME: getjoinaddr
  *
  * DESCRIPTION: This function returns the address of the coordinator
+ *
+ * The return address is 1.0.0.0:0
  */
 Address Application::getjoinaddr(void){
 	//trace.funcEntry("Application::getjoinaddr");

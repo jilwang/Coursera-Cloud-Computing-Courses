@@ -29,12 +29,21 @@ public:
 class Address {
 public:
 	char addr[6];
+
+    // Default constructor
 	Address() {}
+
 	// Copy constructor
 	Address(const Address &anotherAddress);
+
 	 // Overloaded = operator
 	Address& operator =(const Address &anotherAddress);
+
+    // Overloaded == operator
 	bool operator ==(const Address &anotherAddress);
+
+    // constructor from a string in the format "id:port"
+    // and store them into a char array addr
 	Address(string address) {
 		size_t pos = address.find(":");
 		int id = stoi(address.substr(0, pos));
@@ -42,6 +51,8 @@ public:
 		memcpy(&addr[0], &id, sizeof(int));
 		memcpy(&addr[4], &port, sizeof(short));
 	}
+
+    // convert address into a string in the form id:port
 	string getAddress() {
 		int id = 0;
 		short port;
@@ -49,6 +60,7 @@ public:
 		memcpy(&port, &addr[4], sizeof(short));
 		return to_string(id) + ":" + to_string(port);
 	}
+
 	void init() {
 		memset(&addr, 0, sizeof(addr));
 	}
@@ -65,15 +77,21 @@ public:
 	short port;
 	long heartbeat;
 	long timestamp;
+
+    // constructors
 	MemberListEntry(int id, short port, long heartbeat, long timestamp);
 	MemberListEntry(int id, short port);
 	MemberListEntry(): id(0), port(0), heartbeat(0), timestamp(0) {}
 	MemberListEntry(const MemberListEntry &anotherMLE);
 	MemberListEntry& operator =(const MemberListEntry &anotherMLE);
+
+    // getters
 	int getid();
 	short getport();
 	long getheartbeat();
 	long gettimestamp();
+
+    // setters
 	void setid(int id);
 	void setport(short port);
 	void setheartbeat(long hearbeat);
@@ -88,28 +106,22 @@ public:
 // Declaration and definition here
 class Member {
 public:
-	// This member's Address
 	Address addr;
-	// boolean indicating if this member is up
-	bool inited;
-	// boolean indicating if this member is in the group
-	bool inGroup;
-	// boolean indicating if this member has failed
-	bool bFailed;
-	// number of my neighbors
-	int nnb;
-	// the node's own heartbeat
-	long heartbeat;
-	// counter for next ping
-	int pingCounter;
-	// counter for ping timeout
-	int timeOutCounter;
-	// Membership table
-	vector<MemberListEntry> memberList;
-	// My position in the membership table
-	vector<MemberListEntry>::iterator myPos;
-	// Queue for failure detection messages
-	queue<q_elt> mp1q;
+
+	bool inited; 
+	bool inGroup;  // boolean indicating if this member is in the group;
+	bool bFailed; // boolean indicating if this member has failed
+
+	int nnb;            // number of my neighbors
+	long heartbeat;     // the node's own heartbeat
+	int pingCounter;    // counter for next ping
+	int timeOutCounter; // counter for ping timeout
+
+	vector<MemberListEntry> memberList;      // Membership table
+	vector<MemberListEntry>::iterator myPos; // My position in the membership table
+
+	queue<q_elt> mp1q; // Queue for failure detection messages
+
 	/**
 	 * Constructor
 	 */

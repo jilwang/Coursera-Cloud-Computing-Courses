@@ -34,7 +34,7 @@ typedef struct en_msg {
  */
 class EM {
 public:
-	int nextid;
+	int nextid; // the address id for the next entering peer/node
 	int currbuffsize;
 	int firsteltindex;
 	en_msg* buff[ENBUFFSIZE];

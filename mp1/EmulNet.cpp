@@ -68,6 +68,8 @@ EmulNet::~EmulNet() {}
  * FUNCTION NAME: ENinit
  *
  * DESCRIPTION: Init the emulnet for this node
+ *
+ * Keep an incremental address id for new nodes, and return id:0
  */
 void *EmulNet::ENinit(Address *myaddr, short port) {
 	// Initialize data structures for this member

@@ -53,14 +53,17 @@ private:
 	EmulNet *emulNet;
 	Log *log;
 	Params *par;
+
 	Member *memberNode;
 	char NULLADDR[6];
 
 public:
 	MP1Node(Member *, Params *, EmulNet *, Log *, Address *);
+
 	Member * getMemberNode() {
 		return memberNode;
 	}
+
 	int recvLoop();
 	static int enqueueWrapper(void *env, char *buff, int size);
 	void nodeStart(char *servaddrstr, short serverport);

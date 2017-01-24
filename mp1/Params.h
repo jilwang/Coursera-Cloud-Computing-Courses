@@ -27,6 +27,7 @@ public:
 	int EN_GPSZ;			    // actual number of peers
 	int MAX_MSG_SIZE;
 	int DROP_MSG;
+
 	int dropmsg;
 	int globaltime;
 	int allNodesJoined;

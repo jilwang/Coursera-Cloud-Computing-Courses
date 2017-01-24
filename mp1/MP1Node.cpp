@@ -65,6 +65,9 @@ int MP1Node::enqueueWrapper(void *env, char *buff, int size) {
  * 				Called by the application layer.
  */
 void MP1Node::nodeStart(char *servaddrstr, short servport) {
+
+    // weird that it does not use servaddrstr, and the caller is providing a JOINADDR var that is never initialized
+    // current code is fine but just weird
     Address joinaddr;
     joinaddr = getJoinAddress();
 
@@ -102,6 +105,7 @@ int MP1Node::initThisNode(Address *joinaddr) {
 	memberNode->bFailed = false;
 	memberNode->inited = true;
 	memberNode->inGroup = false;
+
     // node is up!
 	memberNode->nnb = 0;
 	memberNode->heartbeat = 0;
@@ -123,18 +127,22 @@ int MP1Node::introduceSelfToGroup(Address *joinaddr) {
     static char s[1024];
 #endif
 
+    // I am the group booter (first process to join the group). Boot up the group
     if ( 0 == memcmp((char *)&(memberNode->addr.addr), (char *)&(joinaddr->addr), sizeof(memberNode->addr.addr))) {
-        // I am the group booter (first process to join the group). Boot up the group
 #ifdef DEBUGLOG
         log->LOG(&memberNode->addr, "Starting up group...");
 #endif
         memberNode->inGroup = true;
     }
+
+    // I need to talk to the introducer
+    // A bit of pointer arithmatic here
+    // Not sure why the skeleton code process the messages like this...
     else {
         size_t msgsize = sizeof(MessageHdr) + sizeof(joinaddr->addr) + sizeof(long) + 1;
         msg = (MessageHdr *) malloc(msgsize * sizeof(char));
 
-        // create JOINREQ message: format of data is {struct Address myaddr}
+        // create JOINREQ message: format of data is message_type + member_node_addr + hearbeat + \0
         msg->msgType = JOINREQ;
         memcpy((char *)(msg+1), &memberNode->addr.addr, sizeof(memberNode->addr.addr));
         memcpy((char *)(msg+1) + 1 + sizeof(memberNode->addr.addr), &memberNode->heartbeat, sizeof(long));
@@ -161,6 +169,7 @@ int MP1Node::introduceSelfToGroup(Address *joinaddr) {
  */
 int MP1Node::finishUpThisNode(){
    /*
+    * TODO
     * Your code goes here
     */
 }
@@ -171,6 +180,7 @@ int MP1Node::finishUpThisNode(){
  * DESCRIPTION: Executed periodically at each member
  * 				Check your messages in queue and perform membership protocol duties
  */
+//TODO
 void MP1Node::nodeLoop() {
     if (memberNode->bFailed) {
     	return;
@@ -214,6 +224,7 @@ void MP1Node::checkMessages() {
  *
  * DESCRIPTION: Message handler for different message types
  */
+//TODO
 bool MP1Node::recvCallBack(void *env, char *data, int size ) {
 	/*
 	 * Your code goes here
@@ -227,6 +238,7 @@ bool MP1Node::recvCallBack(void *env, char *data, int size ) {
  * 				the nodes
  * 				Propagate your membership list
  */
+//TODO
 void MP1Node::nodeLoopOps() {
 
 	/*
@@ -265,6 +277,7 @@ Address MP1Node::getJoinAddress() {
  *
  * DESCRIPTION: Initialize the membership list
  */
+//TODO
 void MP1Node::initMemberListTable(Member *memberNode) {
 	memberNode->memberList.clear();
 }
